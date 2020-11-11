@@ -1,4 +1,5 @@
 from random import randint
+from typing import Callable
 
 
 class ClampedInteger:
@@ -30,7 +31,7 @@ class Combatant:
         return self.hp.current <= 0
 
     def take_turn(self):
-        pass
+        raise NotImplemented
 
 
 class Player(Combatant):
@@ -57,7 +58,7 @@ class Abaddon(Combatant):
             name="Abaddon",
             hp=randint(480000, 520000),
             mp=randint(2500, 3000),
-            evasion=randint(5, 10)
+            evasion=randint(5, 10),
         )
 
     def take_turn(self):
@@ -72,11 +73,9 @@ class Battle:
 
         self.player_turn = True
 
-
     @property
     def game_over(self) -> True:
         return self.player.defeated or self.enemy.defeated
-
 
     def loop(self):
         while not self.game_over:
@@ -88,7 +87,38 @@ class Battle:
                 self.player_turn = True
 
 
+class Action:  # Lawsuit
+    def __init__(self, action_fn: Callable, mp_cost: int = 0):
+        self.action_fn = action_fn
+        self.mp_cost = mp_cost
 
+    def __call__(self, user: Combatant, target: Combatant = None, *args, **kwargs):
+        return self.action_fn(user, target, *args, **kwargs)
+
+
+class MenuOption:
+    def __init__(self, text: str, action: Action):
+        self.text = text
+        self.action = action
+
+    def invoke(self, user: Combatant, target: Combatant, *args, **kwargs):
+        return self.action(user, target, *args, **kwargs)
+
+
+class Menu:
+    def __init__(self, options: list[MenuOption], title: str = ""):
+        self.options = options
+        self.title = title
+
+    def show(self):
+        print("-" * 50, "\n")
+        print(f"{self.title}")
+
+        if self.title != "":
+            print()
+
+        for i, opt in enumerate(self.options):
+            print(f"{i+1}) {opt.text}")
 
 
 if __name__ == "__main__":
