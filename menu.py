@@ -1,25 +1,27 @@
 from action import Action
 
 
-class MenuOption:
-    def __init__(self, text: str, action: Action):
-        self.text = text
-        self.action = action
-
-    def invoke(self, *args, **kwargs):
-        return self.action(*args, **kwargs)
-
-
 class Menu:
-    def __init__(self, options: list[MenuOption], title: str = ""):
-        self.options = options
+    def __init__(self, title: str = ""):
         self.title = title
+        self.actions: list[Action] = []
+        self.submenus: list["Menu"] = []
+        self.is_child = False
+
+    def add_submenu(self, submenu: "Menu"):
+        submenu.is_child = True
+        self.submenus.append(submenu)
+        return self
+
+    def add_action(self, action: Action):
+        self.actions.append(action)
+        return self
 
     @property
     def opt_dict(self):
-        return { f"{i+1}": opt for i, opt in enumerate(self.options)}
+        return {f"{i+1}": opt for i, opt in enumerate(self.actions + self.submenus)}
 
-    def show(self):
+    def show(self) -> str:
         print("-" * 50, "\n")
         print(f"{self.title}")
 
@@ -27,11 +29,25 @@ class Menu:
             print()
 
         for i, opt in enumerate(self.options):
-            print(f"{i+1}) {opt.text}")
+            if isinstance(opt, self.__class__):
+                text = opt.title
+            else:
+                text = str(opt)
+            print(f"{i+1}) {text}")
 
         while True:
             selection = input("What will you do? ")
-            if selection in self.opt_dict.keys():
-                self.opt_dict[selection].invoke()
-                break
+            if self.is_child and selection == "0":
+                return
+            elif selection not in self.opt_dict.keys():
+                continue
+            elif isinstance(self.opt_dict[selection], self.__class__):
+                action_name = self.opt_dict[selection].show()
+                if action_name:
+                    return action_name
+                else:
+                    continue
+            else:
+                return self.opt_dict[selection].name
+
 

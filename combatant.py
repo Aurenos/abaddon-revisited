@@ -1,9 +1,7 @@
 from random import randint
 
-from menu import Menu, MenuOption
 
-
-class ClampedInteger:
+class ClampedStat:
     def __init__(self, maximum: int, minimum: int = 0):
         self.maximum = maximum
         self.minimum = minimum
@@ -23,8 +21,8 @@ class ClampedInteger:
 class Combatant:
     def __init__(self, name: str, hp: int, mp: int, evasion: int):
         self.name = name
-        self.hp = ClampedInteger(hp)
-        self.mp = ClampedInteger(mp)
+        self.hp = ClampedStat(hp)
+        self.mp = ClampedStat(mp)
         self.evasion = evasion
 
     @property
@@ -36,13 +34,6 @@ class Combatant:
 
 
 class Player(Combatant):
-    main_menu = Menu(
-        [
-            MenuOption("Do Something", lambda: print("\nYou did something!")),
-            MenuOption("Do Something Else", lambda: print("\nYou did something else!")),
-        ]
-    )
-
     def __init__(self):
         super().__init__(
             name="Spero",
@@ -57,7 +48,6 @@ class Player(Combatant):
 
     def take_turn(self):
         print(self.stat_block)
-        self.main_menu.show()
 
 
 class Abaddon(Combatant):
