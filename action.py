@@ -1,11 +1,17 @@
 import math
 import sys, inspect
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import Optional, Union
 from random import randint
 
 
 import combatant as comb
+
+
+class DamageType(Enum):
+    Physical = "physical"
+    Magical = "magical"
 
 
 class Action(ABC):  # Lawsuit
@@ -20,7 +26,9 @@ class Action(ABC):  # Lawsuit
         return f"<{self.__class__.__name__}: {self.name}>"
 
     def __str__(self):
-        return self.name + f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
+        return self.name.capitalize() + (
+            f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
+        )
 
     @abstractmethod
     def invoke(self, user: comb.Combatant):
@@ -30,9 +38,17 @@ class Action(ABC):  # Lawsuit
         user.mp.delta(self.mp_cost)
 
 
-class OffensiveAction(Action, ABC):
+class DamagingAction(Action, ABC):
+    damage_type: DamageType
+
     @abstractmethod
-    def invoke(self, user: comb.Combatant, target: comb.Combatant):
+    def invoke(
+        self,
+        user: comb.Combatant,
+        target: comb.Combatant,
+        damage_range: tuple[int, int],
+        damage_multipliers: Optional[list[float]] = None,
+    ):
         raise NotImplemented
 
 
@@ -49,8 +65,9 @@ def clamp_damage(value: Union[int, float]):
 ###############################################
 
 
-class AttackAction(OffensiveAction):
+class AttackAction(DamagingAction):
     name = "attack"
+    damage_type = DamageType.Physical
 
     def invoke(
         self,
@@ -88,6 +105,7 @@ ACTIONS = {
         sys.modules[__name__],
         lambda c: inspect.isclass(c)
         and not inspect.isabstract(c)
+        and not issubclass(c, Enum)
         and inspect.getmodule(c).__name__ == __name__,
     )
 }

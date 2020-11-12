@@ -18,11 +18,14 @@ class Menu:
         return self
 
     @property
+    def options(self):
+        return self.actions + self.submenus
+
+    @property
     def opt_dict(self):
-        return {f"{i+1}": opt for i, opt in enumerate(self.actions + self.submenus)}
+        return {f"{i+1}": opt for i, opt in enumerate(self.options)}
 
     def show(self) -> str:
-        print("-" * 50, "\n")
         print(f"{self.title}")
 
         if self.title != "":
@@ -34,6 +37,11 @@ class Menu:
             else:
                 text = str(opt)
             print(f"{i+1}) {text}")
+
+        if self.is_child:
+            print("0) Cancel")
+
+        print()
 
         while True:
             selection = input("What will you do? ")

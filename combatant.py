@@ -26,11 +26,13 @@ class Combatant:
         self.evasion = evasion
 
     @property
-    def defeated(self) -> True:
+    def base_damage(self) -> tuple[int, int]:
+        raise NotImplemented
+
+    @property
+    def defeated(self) -> bool:
         return self.hp.current <= 0
 
-    def take_turn(self):
-        raise NotImplemented
 
 
 class Player(Combatant):
@@ -41,13 +43,17 @@ class Player(Combatant):
             mp=randint(380, 550),
             evasion=randint(10, 20),
         )
+        self.strength = randint(100, 255)
+        self.magic = randint(100, 255)
+
+    @property
+    def base_damage(self):
+        return (30, 40)
 
     @property
     def stat_block(self) -> str:
         return f"{self.name}\n\nHP: {self.hp}\nMP: {self.mp}"
 
-    def take_turn(self):
-        print(self.stat_block)
 
 
 class Abaddon(Combatant):
@@ -58,6 +64,10 @@ class Abaddon(Combatant):
             mp=randint(2500, 3000),
             evasion=randint(5, 10),
         )
+
+    @property
+    def stat_block(self) -> str:
+        return f"{self.name}\n\nHP: {self.hp}"
 
     def take_turn(self):
         print("Enemy Turn")
