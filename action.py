@@ -85,7 +85,7 @@ class AttackAction(OffensiveAction):
 #######################################################
 
 ACTIONS = {
-    cls_name: cls()
+    cls.name: cls()
     for cls_name, cls in inspect.getmembers(
         sys.modules[__name__],
         lambda c: inspect.isclass(c)
