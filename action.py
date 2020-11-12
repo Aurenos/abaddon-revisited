@@ -22,7 +22,6 @@ class Action(ABC):  # Lawsuit
     def __str__(self):
         return self.name + f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
 
-
     @abstractmethod
     def invoke(self, user: comb.Combatant):
         raise NotImplemented
@@ -41,7 +40,6 @@ class SelfAction(Action, ABC):
     @abstractmethod
     def invoke(self, user: comb.Combatant):
         raise NotImplemented
-
 
 
 def clamp_damage(value: Union[int, float]):
@@ -86,7 +84,7 @@ class AttackAction(OffensiveAction):
 
 ACTIONS = {
     cls.name: cls()
-    for cls_name, cls in inspect.getmembers(
+    for _, cls in inspect.getmembers(
         sys.modules[__name__],
         lambda c: inspect.isclass(c)
         and not inspect.isabstract(c)
