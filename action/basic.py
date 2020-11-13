@@ -10,6 +10,7 @@ from combatant import Combatant
 @register_action
 class AttackAction(DamagingAction):
     name = "attack"
+    mp_cost = 10
     damage_type = DamageType.Physical
 
     def invoke(

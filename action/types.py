@@ -31,7 +31,7 @@ class Action(ABC):  # Lawsuit
         raise NotImplementedError
 
     def deduct_mp_from_user(self, user: Combatant):
-        user.mp.delta(self.mp_cost)
+        user.mp.delta(-self.mp_cost)
 
 
 class DamagingAction(Action, ABC):
