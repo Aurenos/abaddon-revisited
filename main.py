@@ -67,4 +67,7 @@ if __name__ == "__main__":
     player = Player()
     enemy = Abaddon()
     battle = Battle(player, enemy)
-    battle.loop()
+    try:
+        battle.loop()
+    except KeyboardInterrupt:
+        print("\n\nYES, FLEE COWARD.")
