@@ -1,6 +1,9 @@
+import functools
+from abc import ABC, abstractmethod
 from random import randint
 
 
+@functools.total_ordering
 class ClampedStat:
     def __init__(self, maximum: int, minimum: int = 0):
         self.maximum = maximum
@@ -11,6 +14,12 @@ class ClampedStat:
         value = self.current + other
         self.current = self.__clamp(value)
 
+    def __lt__(self, other: int):
+        return self.current < other
+
+    def __eq__(self, other: int):
+        return self.current == other
+
     def __str__(self):
         return f"{str(self.current)} / {str(self.maximum)}"
 
@@ -18,7 +27,7 @@ class ClampedStat:
         return max(self.minimum, min(value, self.maximum))
 
 
-class Combatant:
+class Combatant(ABC):
     def __init__(self, name: str, hp: int, mp: int, evasion: int):
         self.name = name
         self.hp = ClampedStat(hp)
@@ -26,8 +35,14 @@ class Combatant:
         self.evasion = evasion
 
     @property
+    @abstractmethod
     def base_damage(self) -> tuple[int, int]:
-        raise NotImplemented
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def stat_block(self) -> str:
+        raise NotImplementedError
 
     @property
     def defeated(self) -> bool:
@@ -47,7 +62,7 @@ class Player(Combatant):
         self.magic = randint(100, 255)
 
     @property
-    def base_damage(self):
+    def base_damage(self) -> tuple[int, int]:
         return (30, 40)
 
     @property
@@ -66,9 +81,12 @@ class Abaddon(Combatant):
         )
 
     @property
+    def base_damage(self):
+        return (960, 1160)
+
+    @property
     def stat_block(self) -> str:
         return f"{self.name}\n\nHP: {self.hp}"
 
-    def take_turn(self):
-        print("Enemy Turn")
-        input()
+    def take_turn(self) -> str:
+        return "attack"
