@@ -1,8 +1,8 @@
-import action as act
+from action import actions, DamagingAction, SelfAction, DamageType
 from combatant import Player, Abaddon
 from menu import Menu
 
-PLAYER_MENU = Menu().add_action(act.db.get("attack"))
+PLAYER_MENU = Menu().add_action(actions.attack)
 
 
 class Battle:
@@ -24,19 +24,19 @@ class Battle:
             if self.player_turn:
                 print(self.player.stat_block)
                 action_name = PLAYER_MENU.show()
-                perform_action = act.db.get(action_name)
+                perform_action = actions[action_name]
 
-                if isinstance(perform_action, act.DamagingAction):
+                if isinstance(perform_action, DamagingAction):
                     multipliers = []
-                    if perform_action.damage_type == act.DamageType.Physical:
+                    if perform_action.damage_type == DamageType.Physical:
                         multipliers.append(player.strength)
-                    elif perform_action.damage_type == act.DamageType.Magical:
+                    elif perform_action.damage_type == DamageType.Magical:
                         multipliers.append(player.magic)
                     perform_action(
                         self.player, self.enemy, self.player.base_damage, multipliers
                     )
 
-                elif isinstance(perform_action, act.SelfAction):
+                elif isinstance(perform_action, SelfAction):
                     perform_action(player)
 
                 else:
@@ -46,7 +46,7 @@ class Battle:
             else:
                 print(self.enemy.stat_block)
                 action_name = self.enemy.take_turn()
-                perform_action = act.db.get(action_name)
+                perform_action = actions[action_name]
                 perform_action(self.enemy, self.player, self.enemy.base_damage)
 
                 self.player_turn = True
@@ -57,10 +57,7 @@ class Battle:
                 f"has fallen. The world's only hope succumbed to {self.enemy.name}'s ferocity and might...",
             )
         elif self.enemy.hp <= 0:
-            print(
-                self.enemy.name,
-                "is kill. Rejoice!"
-            )
+            print(self.enemy.name, "is kill. Rejoice!")
 
 
 if __name__ == "__main__":

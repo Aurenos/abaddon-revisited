@@ -2,15 +2,15 @@ import math
 from typing import Optional
 from random import randint
 
-from .db import register_action
+from .db import actions
 from .types import DamageType, DamagingAction
 from .util import clamp_damage
 from combatant import Combatant
 
-@register_action
+
+@actions.register
 class AttackAction(DamagingAction):
     name = "attack"
-    mp_cost = 10
     damage_type = DamageType.Physical
 
     def invoke(

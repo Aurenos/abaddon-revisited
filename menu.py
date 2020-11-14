@@ -57,5 +57,3 @@ class Menu:
                     continue
             else:
                 return self.opt_dict[selection].name
-
-
