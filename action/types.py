@@ -1,7 +1,7 @@
 import math
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 from combatant import Combatant
 from effects import EffectType, Element
@@ -16,6 +16,7 @@ class Action(ABC):  # Lawsuit
     element: Element = Element.Unaspected
 
     def __call__(self, user: Combatant, *args, **kwargs):
+        self.announce(user, *args, **kwargs)
         self.invoke(user, *args, **kwargs)
         self.deduct_mp_from_user(user)
 
@@ -34,6 +35,10 @@ class Action(ABC):  # Lawsuit
     @abstractmethod
     def invoke(self, user: Combatant, *args, **kwargs):
         raise NotImplementedError
+
+    def announce(self, user: Combatant, *args, **kwargs):
+        print(user.name, "uses", f"{self.display_name}!")
+        input()
 
     def deduct_mp_from_user(self, user: Combatant):
         user.mp.delta(-self.mp_cost)
@@ -55,3 +60,13 @@ class SelfAction(Action, ABC):
     @abstractmethod
     def invoke(self, user: Combatant, multipliers: list[Multiplier]):
         raise NotImplementedError
+
+
+class Spell:
+    def announce(self, user: Combatant, target: Optional[Combatant] = None, *_, **__):
+        s = f"{user.name} casts {self.display_name}"
+        if target:
+            s += f" on {target.name}"
+        s += "!"
+        print(s)
+        input()

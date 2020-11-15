@@ -11,6 +11,11 @@ class AttackAction(DamagingAction):
     name = "attack"
     effect_type = EffectType.Physical
 
+    def announce(self, user: Combatant, target: Combatant, *_, **__):
+        print(user.name, f"attacks {target.name}")
+        input()
+
+
     def invoke(
         self,
         user: Combatant,
@@ -18,9 +23,6 @@ class AttackAction(DamagingAction):
         damage_range: tuple[int, int],
         multipliers: list[Multiplier],
     ):
-        print(user.name, f"attacks {target.name}")
-        input()
-
         target_evades = randint(1, 100) < target.evasion
         if target_evades:
             print(target.name, f"evades {user.name}'s attack!")
