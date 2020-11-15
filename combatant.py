@@ -1,4 +1,5 @@
 import functools
+import math
 from abc import ABC, abstractmethod
 from random import randint
 from typing import Optional, Union
@@ -109,8 +110,12 @@ class Abaddon(Combatant):
         return (960, 1160)
 
     @property
+    def hp_percent(self):
+        return math.floor((self.hp.current / self.hp.maximum) * 100)
+
+    @property
     def stat_block(self) -> str:
-        return f"{self.name}\n\nHP: {self.hp}"
+        return f"{self.name}\n\nHP: {self.hp} ( {self.hp_percent}% )"
 
     def get_stat_by_effect_type(self, effect_type: EffectType):
         return 1
