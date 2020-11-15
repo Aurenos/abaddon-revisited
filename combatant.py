@@ -1,8 +1,10 @@
 import functools
 from abc import ABC, abstractmethod
 from random import randint
+from typing import Optional, Union
 
-from effects import EffectType
+from effects import EffectType, Element
+
 
 @functools.total_ordering
 class ClampedStat:
@@ -15,10 +17,14 @@ class ClampedStat:
         value = self.current + other
         self.current = self.__clamp(value)
 
-    def __lt__(self, other: int):
+    def __lt__(self, other: Union[int, "ClampedStat"]):
+        if isinstance(other, ClampedStat):
+            return self.current < other.current
         return self.current < other
 
-    def __eq__(self, other: int):
+    def __eq__(self, other: Union[int, "ClampedStat"]):
+        if isinstance(other, ClampedStat):
+            return self.current == other.current
         return self.current == other
 
     def __str__(self):
@@ -29,11 +35,19 @@ class ClampedStat:
 
 
 class Combatant(ABC):
-    def __init__(self, name: str, hp: int, mp: int, evasion: int):
+    def __init__(
+        self,
+        name: str,
+        hp: int,
+        mp: int,
+        evasion: int,
+        affinity: Optional[Element] = None,
+    ):
         self.name = name
         self.hp = ClampedStat(hp)
         self.mp = ClampedStat(mp)
         self.evasion = evasion
+        self.affinity = affinity
 
     @property
     @abstractmethod

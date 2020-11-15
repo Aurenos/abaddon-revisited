@@ -8,6 +8,9 @@ PLAYER_MENU = (
     .add_submenu(
         Menu("WHITE MAGIC", prompt="What will you cast? ").add_action(actions.cure)
     )
+    .add_submenu(
+        Menu("BLACK MAGIC", prompt="What will you cast? ").add_action(actions.flare)
+    )
 )
 
 
@@ -30,8 +33,6 @@ class Battle:
         print(self.player.stat_block)
         action_name = PLAYER_MENU.get_action()
         return actions[action_name]
-
-    
 
     def loop(self):
         while not self.game_over:
@@ -58,7 +59,7 @@ class Battle:
                 perform_action(**action_params)
                 self.player_turn = False
             else:
-                print(self.enemy.stat_block)
+                print(self.enemy.stat_block, "\n")
                 action_name = self.enemy.take_turn()
                 perform_action = actions[action_name]
                 perform_action(self.enemy, self.player, self.enemy.base_damage, [])
@@ -75,8 +76,10 @@ class Battle:
 
 
 if __name__ == "__main__":
+    from effects import Element
     player = Player()
     enemy = Abaddon()
+    enemy.affinity = Element.Ice
     battle = Battle(player, enemy)
     try:
         battle.loop()

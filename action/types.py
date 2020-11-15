@@ -23,9 +23,13 @@ class Action(ABC):  # Lawsuit
         return f"<{self.__class__.__name__}: {self.name}>"
 
     def __str__(self):
-        return self.name.title() + (
+        return self.display_name + (
             f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
         )
+
+    @property
+    def display_name(self):
+        return self.name.title()
 
     @abstractmethod
     def invoke(self, user: Combatant, *args, **kwargs):
