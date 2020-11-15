@@ -2,7 +2,13 @@ from action import actions, DamagingAction, SelfAction, ActionType, Action
 from combatant import Player, Abaddon
 from menu import Menu
 
-PLAYER_MENU = Menu().add_action(actions.attack).add_submenu(Menu("WHITE MAGIC").add_action(actions.cure))
+PLAYER_MENU = (
+    Menu()
+    .add_action(actions.attack)
+    .add_submenu(
+        Menu("WHITE MAGIC", prompt="What will you cast? ").add_action(actions.cure)
+    )
+)
 
 
 class Battle:

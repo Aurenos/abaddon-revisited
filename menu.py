@@ -2,8 +2,9 @@ from action import Action
 
 
 class Menu:
-    def __init__(self, title: str = ""):
+    def __init__(self, title: str = "", prompt: str = "What will you do? "):
         self.title = title
+        self.prompt = prompt
         self.actions: list[Action] = []
         self.submenus: list["Menu"] = []
         self.is_child = False
@@ -56,7 +57,7 @@ class Menu:
         self.show()
 
         while True:
-            selection = input("What will you do? ")
+            selection = input(self.prompt)
             if self.is_child and selection == "0":
                 return
             elif selection not in self.opt_dict.keys():
