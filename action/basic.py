@@ -3,7 +3,7 @@ from typing import Optional
 from random import randint
 
 from .db import actions
-from .types import DamageType, DamagingAction
+from .types import ActionType, DamagingAction, Multiplier
 from .util import clamp_damage
 from combatant import Combatant
 
@@ -11,18 +11,15 @@ from combatant import Combatant
 @actions.register
 class AttackAction(DamagingAction):
     name = "attack"
-    damage_type = DamageType.Physical
+    action_type = ActionType.Physical
 
     def invoke(
         self,
         user: Combatant,
         target: Combatant,
         damage_range: tuple[int, int],
-        damage_multipliers: Optional[list[float]] = None,
+        multipliers: list[Multiplier],
     ):
-        if damage_multipliers is None:
-            damage_multipliers = []
-
         print(user.name, f"attacks {target.name}")
         input()
 
@@ -33,9 +30,9 @@ class AttackAction(DamagingAction):
 
         critical_hit = randint(1, 100) <= 10
         if critical_hit:
-            damage_multipliers.append(1.5)
+            multipliers.append(1.5)
 
-        damage = clamp_damage(math.prod((randint(*damage_range), *damage_multipliers)))
+        damage = clamp_damage(math.prod((randint(*damage_range), *multipliers)))
 
         print(target.name, "takes", damage, "damage!")
         target.hp.delta(-damage)

@@ -1,4 +1,4 @@
-from action import actions, DamagingAction, SelfAction, DamageType
+from action import actions, DamagingAction, SelfAction, ActionType, Action
 from combatant import Player, Abaddon
 from menu import Menu
 
@@ -16,38 +16,51 @@ class Battle:
     def game_over(self) -> True:
         return self.player.defeated or self.enemy.defeated
 
+    def print_separator(self):
+        sep_char = ">" if self.player_turn else "<"
+        print("\n" + (sep_char * 50), "\n")
+
+    def show_player_menu(self) -> Action:
+        print(self.player.stat_block)
+        action_name = PLAYER_MENU.show()
+        return actions[action_name]
+
+    def get_multiplier_by_action_type(self, action_type: ActionType):
+        if action_type == ActionType.Physical:
+            return self.player.strength
+
+        if action_type == ActionType.Magical:
+            return self.player.magic
+
     def loop(self):
         while not self.game_over:
-            sep_char = ">" if self.player_turn else "<"
-            print("\n" + (sep_char * 50), "\n")
+            action_params = {}
+
+            self.print_separator()
 
             if self.player_turn:
-                print(self.player.stat_block)
-                action_name = PLAYER_MENU.show()
-                perform_action = actions[action_name]
+                perform_action = self.show_player_menu()
+
+                action_params["user"] = self.player
+                action_params["multipliers"] = [
+                    self.get_multiplier_by_action_type(perform_action.action_type)
+                ]
 
                 if isinstance(perform_action, DamagingAction):
-                    multipliers = []
-                    if perform_action.damage_type == DamageType.Physical:
-                        multipliers.append(player.strength)
-                    elif perform_action.damage_type == DamageType.Magical:
-                        multipliers.append(player.magic)
-                    perform_action(
-                        self.player, self.enemy, self.player.base_damage, multipliers
-                    )
-
+                    action_params["target"] = self.enemy
+                    action_params["damage_range"] = self.player.base_damage
                 elif isinstance(perform_action, SelfAction):
-                    perform_action(player)
-
+                    pass
                 else:
                     raise Exception("wat")
 
+                perform_action(**action_params)
                 self.player_turn = False
             else:
                 print(self.enemy.stat_block)
                 action_name = self.enemy.take_turn()
                 perform_action = actions[action_name]
-                perform_action(self.enemy, self.player, self.enemy.base_damage)
+                perform_action(self.enemy, self.player, self.enemy.base_damage, [])
 
                 self.player_turn = True
 

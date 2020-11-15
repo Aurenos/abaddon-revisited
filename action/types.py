@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Optional
+from typing import Optional, TypeVar
 
 from combatant import Combatant
 
 
-class DamageType(Enum):
+Multiplier = TypeVar("Multiplier", int, float)
+
+
+class ActionType(Enum):
     Physical = "physical"
     Magical = "magical"
 
@@ -13,6 +16,7 @@ class DamageType(Enum):
 class Action(ABC):  # Lawsuit
     name: str
     mp_cost: int = 0
+    action_type: ActionType
 
     def __call__(self, user: Combatant, *args, **kwargs):
         self.invoke(user, *args, **kwargs)
@@ -27,7 +31,7 @@ class Action(ABC):  # Lawsuit
         )
 
     @abstractmethod
-    def invoke(self, user: Combatant):
+    def invoke(self, user: Combatant, *args, **kwargs):
         raise NotImplementedError
 
     def deduct_mp_from_user(self, user: Combatant):
@@ -35,20 +39,18 @@ class Action(ABC):  # Lawsuit
 
 
 class DamagingAction(Action, ABC):
-    damage_type: DamageType
-
     @abstractmethod
     def invoke(
         self,
         user: Combatant,
         target: Combatant,
         damage_range: tuple[int, int],
-        damage_multipliers: Optional[list[float]] = None,
+        multipliers: list[Multiplier],
     ):
         raise NotImplementedError
 
 
 class SelfAction(Action, ABC):
     @abstractmethod
-    def invoke(self, user: Combatant):
+    def invoke(self, user: Combatant, multipliers: list[Multiplier]):
         raise NotImplementedError

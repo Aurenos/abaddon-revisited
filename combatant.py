@@ -49,7 +49,6 @@ class Combatant(ABC):
         return self.hp.current <= 0
 
 
-
 class Player(Combatant):
     def __init__(self):
         super().__init__(
@@ -68,7 +67,6 @@ class Player(Combatant):
     @property
     def stat_block(self) -> str:
         return f"{self.name}\n\nHP: {self.hp}\nMP: {self.mp}"
-
 
 
 class Abaddon(Combatant):
