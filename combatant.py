@@ -2,6 +2,7 @@ import functools
 from abc import ABC, abstractmethod
 from random import randint
 
+from effects import EffectType
 
 @functools.total_ordering
 class ClampedStat:
@@ -48,6 +49,10 @@ class Combatant(ABC):
     def defeated(self) -> bool:
         return self.hp.current <= 0
 
+    @abstractmethod
+    def get_stat_by_effect_type(self, effect_type: EffectType):
+        raise NotImplementedError
+
 
 class Player(Combatant):
     def __init__(self):
@@ -68,6 +73,13 @@ class Player(Combatant):
     def stat_block(self) -> str:
         return f"{self.name}\n\nHP: {self.hp}\nMP: {self.mp}"
 
+    def get_stat_by_effect_type(self, effect_type: EffectType):
+        if effect_type == EffectType.Physical:
+            return self.strength
+
+        if effect_type == EffectType.Magical:
+            return self.magic
+
 
 class Abaddon(Combatant):
     def __init__(self):
@@ -85,6 +97,9 @@ class Abaddon(Combatant):
     @property
     def stat_block(self) -> str:
         return f"{self.name}\n\nHP: {self.hp}"
+
+    def get_stat_by_effect_type(self, effect_type: EffectType):
+        return 1
 
     def take_turn(self) -> str:
         return "attack"

@@ -2,7 +2,7 @@ from random import randint
 from combatant import Combatant
 
 from .db import actions
-from .types import ActionType, SelfAction, Multiplier
+from .types import EffectType, SelfAction, Multiplier
 from .util import clamp_output
 
 
@@ -10,7 +10,7 @@ from .util import clamp_output
 class CureSpell(SelfAction):
     name = "cure"
     mp_cost = 25
-    action_type = ActionType.Magical
+    effect_type = EffectType.Magical
 
     def invoke(self, user: Combatant, multipliers: list[Multiplier]):
         print(user.name, "casts Cure!")

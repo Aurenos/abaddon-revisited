@@ -1,7 +1,7 @@
 from random import randint
 
 from .db import actions
-from .types import ActionType, DamagingAction, Multiplier
+from .types import EffectType, DamagingAction, Multiplier
 from .util import clamp_output
 from combatant import Combatant
 
@@ -9,7 +9,7 @@ from combatant import Combatant
 @actions.register
 class AttackAction(DamagingAction):
     name = "attack"
-    action_type = ActionType.Physical
+    effect_type = EffectType.Physical
 
     def invoke(
         self,

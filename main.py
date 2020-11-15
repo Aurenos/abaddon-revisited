@@ -1,4 +1,4 @@
-from action import actions, DamagingAction, SelfAction, ActionType, Action
+from action import actions, DamagingAction, SelfAction, Action
 from combatant import Player, Abaddon
 from menu import Menu
 
@@ -31,12 +31,7 @@ class Battle:
         action_name = PLAYER_MENU.get_action()
         return actions[action_name]
 
-    def get_multiplier_by_action_type(self, action_type: ActionType):
-        if action_type == ActionType.Physical:
-            return self.player.strength
-
-        if action_type == ActionType.Magical:
-            return self.player.magic
+    
 
     def loop(self):
         while not self.game_over:
@@ -49,7 +44,7 @@ class Battle:
 
                 action_params["user"] = self.player
                 action_params["multipliers"] = [
-                    self.get_multiplier_by_action_type(perform_action.action_type)
+                    self.player.get_stat_by_effect_type(perform_action.effect_type)
                 ]
 
                 if isinstance(perform_action, DamagingAction):

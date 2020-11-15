@@ -4,20 +4,16 @@ from enum import Enum
 from typing import TypeVar
 
 from combatant import Combatant
-
+from effects import EffectType, Element
 
 Multiplier = TypeVar("Multiplier", int, float)
-
-
-class ActionType(Enum):
-    Physical = "physical"
-    Magical = "magical"
 
 
 class Action(ABC):  # Lawsuit
     name: str
     mp_cost: int = 0
-    action_type: ActionType
+    action_type: EffectType
+    element: Element = Element.Unaspected
 
     def __call__(self, user: Combatant, *args, **kwargs):
         self.invoke(user, *args, **kwargs)
