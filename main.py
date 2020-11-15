@@ -2,7 +2,7 @@ from action import actions, DamagingAction, SelfAction, ActionType, Action
 from combatant import Player, Abaddon
 from menu import Menu
 
-PLAYER_MENU = Menu().add_action(actions.attack)
+PLAYER_MENU = Menu().add_action(actions.attack).add_submenu(Menu("WHITE MAGIC").add_action(actions.cure))
 
 
 class Battle:
@@ -20,9 +20,9 @@ class Battle:
         sep_char = ">" if self.player_turn else "<"
         print("\n" + (sep_char * 50), "\n")
 
-    def show_player_menu(self) -> Action:
+    def get_player_action(self) -> Action:
         print(self.player.stat_block)
-        action_name = PLAYER_MENU.show()
+        action_name = PLAYER_MENU.get_action()
         return actions[action_name]
 
     def get_multiplier_by_action_type(self, action_type: ActionType):
@@ -39,7 +39,7 @@ class Battle:
             self.print_separator()
 
             if self.player_turn:
-                perform_action = self.show_player_menu()
+                perform_action = self.get_player_action()
 
                 action_params["user"] = self.player
                 action_params["multipliers"] = [

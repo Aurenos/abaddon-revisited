@@ -1,6 +1,7 @@
+import math
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from combatant import Combatant
 
@@ -26,7 +27,7 @@ class Action(ABC):  # Lawsuit
         return f"<{self.__class__.__name__}: {self.name}>"
 
     def __str__(self):
-        return self.name.capitalize() + (
+        return self.name.title() + (
             f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
         )
 

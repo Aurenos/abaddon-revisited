@@ -25,7 +25,15 @@ class Menu:
     def opt_dict(self):
         return {f"{i+1}": opt for i, opt in enumerate(self.options)}
 
-    def show(self) -> str:
+    def print_separator(self):
+        print("-" * 25)
+
+    def show(self):
+        if self.is_child: 
+            print()
+        
+        self.print_separator()
+
         print(f"{self.title}")
 
         if self.title != "":
@@ -33,7 +41,7 @@ class Menu:
 
         for i, opt in enumerate(self.options):
             if isinstance(opt, self.__class__):
-                text = opt.title
+                text = opt.title.title()
             else:
                 text = str(opt)
             print(f"{i+1}) {text}")
@@ -43,6 +51,10 @@ class Menu:
 
         print()
 
+
+    def get_action(self) -> str:
+        self.show()
+
         while True:
             selection = input("What will you do? ")
             if self.is_child and selection == "0":
@@ -50,10 +62,11 @@ class Menu:
             elif selection not in self.opt_dict.keys():
                 continue
             elif isinstance(self.opt_dict[selection], self.__class__):
-                action_name = self.opt_dict[selection].show()
+                action_name = self.opt_dict[selection].get_action()
                 if action_name:
                     return action_name
                 else:
+                    self.show()
                     continue
             else:
                 return self.opt_dict[selection].name

@@ -1,10 +1,8 @@
-import math
-from typing import Optional
 from random import randint
 
 from .db import actions
 from .types import ActionType, DamagingAction, Multiplier
-from .util import clamp_damage
+from .util import clamp_output
 from combatant import Combatant
 
 
@@ -32,7 +30,7 @@ class AttackAction(DamagingAction):
         if critical_hit:
             multipliers.append(1.5)
 
-        damage = clamp_damage(math.prod((randint(*damage_range), *multipliers)))
+        damage = clamp_output(randint(*damage_range), multipliers)
 
         print(target.name, "takes", damage, "damage!")
         target.hp.delta(-damage)
