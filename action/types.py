@@ -16,7 +16,10 @@ class Action(ABC):  # Lawsuit
     element: Element = Element.Unaspected
 
     def __call__(self, user: Combatant, *args, **kwargs):
-        self.announce(user, *args, **kwargs)
+        if self.announce:
+            self.announce(user, *args, **kwargs)
+        else:
+            self.__announce(user)
         self.invoke(user, *args, **kwargs)
         self.deduct_mp_from_user(user)
 
@@ -35,8 +38,8 @@ class Action(ABC):  # Lawsuit
     @abstractmethod
     def invoke(self, user: Combatant, *args, **kwargs):
         raise NotImplementedError
-
-    def announce(self, user: Combatant, *args, **kwargs):
+    
+    def __announce(self, user: Combatant):
         print(user.name, "uses", f"{self.display_name}!")
         input()
 
