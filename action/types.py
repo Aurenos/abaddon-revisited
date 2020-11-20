@@ -34,6 +34,7 @@ class Action(ABC):  # Lawsuit
         pause_for_user()
         results = self.produce_results(user, *args, **kwargs)
         self.apply_results(results)
+        pause_for_user()
         self.deduct_mp_from_user(user)
 
     def __repr__(self):
@@ -51,11 +52,17 @@ class Action(ABC):  # Lawsuit
     def apply_results(self, results: list[ActionResult]):
         for result in results:
             if result.type_ == ActionResultType.HP_DELTA:
+                result.combatant.hp.delta(result.value)
                 if result.value <= 0:
                     print(result.combatant.name, "takes", abs(result.value), "damage!")
                 else:
-                    print(result.combatant.name, "restores", result.value, "HP!")
-                result.combatant.hp.delta(result.value)
+                    print(
+                        result.combatant.name,
+                        "restores",
+                        result.value,
+                        "HP!",
+                        f"(Current: {result.combatant.hp})",
+                    )
 
     @property
     def display_name(self):
