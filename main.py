@@ -83,5 +83,5 @@ if __name__ == "__main__":
     battle = Battle(player, enemy)
     try:
         battle.loop()
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         print("\n\nYES, FLEE COWARD.")
