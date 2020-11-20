@@ -68,6 +68,9 @@ class Combatant(ABC):
     def get_stat_by_effect_type(self, effect_type: EffectType):
         raise NotImplementedError
 
+    def is_weak_to(self, element: Element):
+        return self.affinity and ~self.affinity == element
+
 
 class Player(Combatant):
     def __init__(self):

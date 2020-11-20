@@ -24,7 +24,7 @@ class FlareSpell(DamagingAction, Spell):
         damage_range: tuple[int, int],
         multipliers: list[Multiplier],
     ) -> list[ActionResult]:
-        if target.affinity and ~target.affinity == self.element:
+        if target.is_weak_to(self.element):
             print(target.name, "is weak to", f"{self.element}!")
             multipliers.append(1.5)
 
