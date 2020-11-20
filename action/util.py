@@ -1,10 +1,14 @@
 import math
-from typing import Union, Optional
+from typing import Optional, Union, TypeVar
 
-from .types import Multiplier
+Multiplier = TypeVar("Multiplier", int, float)
+
+pause_for_user = input  # alias input to make purpose clear
 
 
-def clamp_output(value: Union[int, float], multipliers: Optional[list[Multiplier]] = None):
+def clamp_output(
+    value: Union[int, float], multipliers: Optional[list[Multiplier]] = None
+):
     if multipliers is None:
         multipliers = []
     mult_value = math.prod([value, *multipliers])

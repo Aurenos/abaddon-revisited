@@ -1,10 +1,13 @@
 from random import randint
+
 from combatant import Combatant
+from effects import EffectType
 
 from .db import actions
-from .types import SelfAction, Spell, Multiplier
-from .util import clamp_output
-from effects import EffectType
+from .types import ActionResult
+from .types import ActionResultType as artype
+from .types import SelfAction, Spell
+from .util import Multiplier, clamp_output
 
 
 @actions.register
@@ -13,9 +16,9 @@ class CureSpell(SelfAction, Spell):
     mp_cost = 25
     effect_type = EffectType.Magical
 
-    def invoke(self, user: Combatant, multipliers: list[Multiplier]):     
+    def produce_results(
+        self, user: Combatant, multipliers: list[Multiplier]
+    ) -> list[ActionResult]:
         hp_restored = clamp_output(randint(20, 25), multipliers)
-        
-        print(user.name, "restores", hp_restored, "HP!")
 
-        user.hp.delta(hp_restored)
+        return [ActionResult(artype.HP_DELTA, hp_restored, user)]

@@ -1,12 +1,23 @@
-import math
 from abc import ABC, abstractmethod
-from enum import Enum
-from typing import TypeVar, Optional
+from dataclasses import dataclass
+from enum import Enum, auto
+from typing import Any, Optional
 
 from combatant import Combatant
 from effects import EffectType, Element
 
-Multiplier = TypeVar("Multiplier", int, float)
+from .util import pause_for_user, Multiplier
+
+
+class ActionResultType(Enum):
+    HP_DELTA = auto()
+
+
+@dataclass
+class ActionResult:
+    type_: ActionResultType
+    value: Any
+    combatant: Combatant
 
 
 class Action(ABC):  # Lawsuit
@@ -20,7 +31,9 @@ class Action(ABC):  # Lawsuit
             self.announce(user, *args, **kwargs)
         else:
             self.__announce(user)
-        self.invoke(user, *args, **kwargs)
+        pause_for_user()
+        results = self.produce_results(user, *args, **kwargs)
+        self.apply_results(results)
         self.deduct_mp_from_user(user)
 
     def __repr__(self):
@@ -31,17 +44,25 @@ class Action(ABC):  # Lawsuit
             f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
         )
 
+    @abstractmethod
+    def produce_results(self, user: Combatant, *args, **kwargs) -> list[ActionResult]:
+        raise NotImplementedError
+
+    def apply_results(self, results: list[ActionResult]):
+        for result in results:
+            if result.type_ == ActionResultType.HP_DELTA:
+                if result.value <= 0:
+                    print(result.combatant.name, "takes", abs(result.value), "damage!")
+                else:
+                    print(result.combatant.name, "restores", result.value, "HP!")
+                result.combatant.hp.delta(result.value)
+
     @property
     def display_name(self):
         return self.name.title()
 
-    @abstractmethod
-    def invoke(self, user: Combatant, *args, **kwargs):
-        raise NotImplementedError
-    
     def __announce(self, user: Combatant):
         print(user.name, "uses", f"{self.display_name}!")
-        input()
 
     def deduct_mp_from_user(self, user: Combatant):
         user.mp.delta(-self.mp_cost)
@@ -49,7 +70,7 @@ class Action(ABC):  # Lawsuit
 
 class DamagingAction(Action, ABC):
     @abstractmethod
-    def invoke(
+    def produce_results(
         self,
         user: Combatant,
         target: Combatant,
@@ -61,7 +82,7 @@ class DamagingAction(Action, ABC):
 
 class SelfAction(Action, ABC):
     @abstractmethod
-    def invoke(self, user: Combatant, multipliers: list[Multiplier]):
+    def produce_results(self, user: Combatant, multipliers: list[Multiplier]):
         raise NotImplementedError
 
 
@@ -72,4 +93,3 @@ class Spell:
             s += f" on {target.name}"
         s += "!"
         print(s)
-        input()
