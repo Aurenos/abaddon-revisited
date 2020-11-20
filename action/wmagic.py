@@ -5,7 +5,7 @@ from effects import EffectType
 
 from .db import actions
 from .types import ActionResult
-from .types import ActionResultType as artype
+from .types import ActionResultType as art
 from .types import SelfAction, Spell
 from .util import Multiplier, clamp_output
 
@@ -21,4 +21,4 @@ class CureSpell(SelfAction, Spell):
     ) -> list[ActionResult]:
         hp_restored = clamp_output(randint(20, 25), multipliers)
 
-        return [ActionResult(artype.HP_DELTA, hp_restored, user)]
+        return [ActionResult(art.HP_DELTA, hp_restored, user)]

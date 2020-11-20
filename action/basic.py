@@ -4,7 +4,7 @@ from combatant import Combatant
 
 from .db import actions
 from .types import ActionResult
-from .types import ActionResultType as artype
+from .types import ActionResultType as art
 from .types import DamagingAction, EffectType
 from .util import Multiplier, clamp_output
 
@@ -35,4 +35,4 @@ class AttackAction(DamagingAction):
 
         damage = clamp_output(randint(*damage_range), multipliers)
 
-        return [ActionResult(artype.HP_DELTA, -damage, target)]
+        return [ActionResult(art.HP_DELTA, -damage, target)]

@@ -5,7 +5,7 @@ from effects import EffectType, Element
 
 from .db import actions
 from .types import ActionResult
-from .types import ActionResultType as artype
+from .types import ActionResultType as art
 from .types import DamagingAction, Spell
 from .util import Multiplier, clamp_output
 
@@ -30,4 +30,4 @@ class FlareSpell(DamagingAction, Spell):
 
         damage = clamp_output(randint(*damage_range), multipliers)
 
-        return [ActionResult(artype.HP_DELTA, -damage, target)]
+        return [ActionResult(art.HP_DELTA, -damage, target)]
