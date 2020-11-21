@@ -9,7 +9,11 @@ PLAYER_MENU = (
         Menu("WHITE MAGIC", prompt="What will you cast? ").add_action(actions.cure)
     )
     .add_submenu(
-        Menu("BLACK MAGIC", prompt="What will you cast? ").add_action(actions.flare)
+        Menu("BLACK MAGIC", prompt="What will you cast? ")
+        .add_action(actions.flare)
+        .add_action(actions.blizzard)
+        .add_action(actions.bolt)
+        .add_action(actions.water)
     )
 )
 
@@ -77,6 +81,7 @@ class Battle:
 
 if __name__ == "__main__":
     from effects import Element
+
     player = Player()
     enemy = Abaddon()
     enemy.affinity = Element.Fire

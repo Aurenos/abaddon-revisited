@@ -45,10 +45,6 @@ class Action(ABC):  # Lawsuit
             f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
         )
 
-    @abstractmethod
-    def produce_results(self, user: Combatant, *args, **kwargs) -> list[ActionResult]:
-        raise NotImplementedError
-
     def apply_results(self, results: list[ActionResult]):
         for result in results:
             if result.type_ == ActionResultType.HP_DELTA:
