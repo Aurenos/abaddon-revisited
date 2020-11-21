@@ -20,18 +20,30 @@ __all__ = [
 
 
 class ActionResultType(Enum):
+    """The different types of ActionResults possible"""
+
     HP_DELTA = auto()
     MP_DELTA = auto()
 
 
 @dataclass
 class ActionResult:
+    """My substitute for Python's lack of true algebraic data types"""
+
     type_: ActionResultType
     value: Any
     combatant: Combatant
 
 
 class Action(ABC):  # Lawsuit
+    """The base class of all actions.
+
+    __call__ uses a template method pattern to take care of resolving
+    actions and applying the results of those actions to the combatants;
+    sub-classes need only override the produce_results() method to be
+    functional.
+    """
+
     name: str
     mp_cost: int = 0
     action_type: EffectType
@@ -82,7 +94,7 @@ class Action(ABC):  # Lawsuit
             pause_for_user()
 
     @property
-    def display_name(self):
+    def display_name(self) -> str:
         return self.name.title()
 
     def __announce(self, user: Combatant):
@@ -103,17 +115,20 @@ class OffensiveAction(Action, ABC):
     ) -> list[ActionResult]:
         raise NotImplementedError
 
-    def check_affinity(self, target: Combatant) -> tuple[list[Multiplier], bool]:
-        multipliers = []
-        negate = False
+    def check_affinity(self, target: Combatant) -> tuple[Multiplier, Multiplier]:
+        """Check to see if the element of this action interacts with the element of the
+        target in some way. Prints out appropriate contextual text and returns a pair of multipliers"""
+
+        weakness_multiplier = 1
+        absorption_multiplier = 1
         if target.is_weak_to(self.element):
             print(target.name, "is weak to", f"{self.element}!")
-            multipliers.append(1.5)
+            weakness_multiplier = 1.5
         elif target.absorbs(self.element):
             print(target.name, "absorbs", f"{self.element}!")
-            negate = True
+            absorption_multiplier = -1
 
-        return multipliers, negate
+        return weakness_multiplier, absorption_multiplier
 
 
 class SelfAction(Action, ABC):
@@ -125,6 +140,8 @@ class SelfAction(Action, ABC):
 
 
 class Spell:
+    """Mixin class to define special announce() method for spell actions"""
+
     def announce(self, user: Combatant, target: Optional[Combatant] = None, *_, **__):
         s = f"{user.name} casts {self.display_name}"
         if target:

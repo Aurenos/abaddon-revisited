@@ -21,10 +21,12 @@ class ElementalSpell(OffensiveAction, Spell):
         damage_range: tuple[int, int],
         multipliers: list[Multiplier],
     ) -> list[ActionResult]:
-        weakness_multipliers, negation = self.check_affinity(target)
-        multipliers += weakness_multipliers
+        weakness_multiplier, absorption_multiplier = self.check_affinity(target)
+        multipliers.append(weakness_multiplier)
 
-        damage = clamp_output(randint(*damage_range), multipliers, negate=negation)
+        damage = (
+            clamp_output(randint(*damage_range), multipliers) * absorption_multiplier
+        )
 
         return [ActionResult(art.HP_DELTA, -damage, target)]
 
@@ -62,7 +64,7 @@ class WaterSpell(ElementalSpell):
 class MPAbsorbSpell(OffensiveAction, Spell):
     name = "mp_absorb"
     effect_type = EffectType.Magical
-    
+
     @property
     def display_name(self):
         return "MP Absorb"
@@ -79,7 +81,7 @@ class MPAbsorbSpell(OffensiveAction, Spell):
             pause_for_user()
             return []
 
-        multipliers.append(1/36)    # hurray for magic numbers :P
+        multipliers.append(1 / 36)  # hurray for magic numbers :P
 
         damage = clamp_output(randint(*damage_range), multipliers)
         if damage > target.mp:  # the original didn't actually have this check
@@ -87,5 +89,5 @@ class MPAbsorbSpell(OffensiveAction, Spell):
 
         return [
             ActionResult(art.MP_DELTA, -damage, target),
-            ActionResult(art.MP_DELTA, damage, user)
+            ActionResult(art.MP_DELTA, damage, user),
         ]
