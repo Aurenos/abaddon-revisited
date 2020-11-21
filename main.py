@@ -1,4 +1,4 @@
-from action import actions, DamagingAction, SelfAction, Action
+from action import actions, OffensiveAction, SelfAction, Action
 from combatant import Player, Abaddon
 from menu import Menu
 
@@ -14,6 +14,7 @@ PLAYER_MENU = (
         .add_action(actions.blizzard)
         .add_action(actions.bolt)
         .add_action(actions.water)
+        .add_action(actions.mp_absorb)
     )
 )
 
@@ -52,7 +53,7 @@ class Battle:
                     self.player.get_stat_by_effect_type(perform_action.effect_type)
                 ]
 
-                if isinstance(perform_action, DamagingAction):
+                if isinstance(perform_action, OffensiveAction):
                     action_params["target"] = self.enemy
                     action_params["damage_range"] = self.player.base_damage
                 elif isinstance(perform_action, SelfAction):
@@ -85,6 +86,7 @@ if __name__ == "__main__":
     player = Player()
     enemy = Abaddon()
     enemy.affinity = Element.Fire
+    enemy.mp.current = 50
     battle = Battle(player, enemy)
     try:
         battle.loop()

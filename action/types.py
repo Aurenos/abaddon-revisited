@@ -9,8 +9,19 @@ from effects import EffectType, Element
 from .util import pause_for_user, Multiplier
 
 
+__all__ = [
+    "ActionResultType",
+    "ActionResult",
+    "Action",
+    "OffensiveAction",
+    "SelfAction",
+    "Spell",
+]
+
+
 class ActionResultType(Enum):
     HP_DELTA = auto()
+    MP_DELTA = auto()
 
 
 @dataclass
@@ -34,7 +45,6 @@ class Action(ABC):  # Lawsuit
         pause_for_user()
         results = self.produce_results(user, *args, **kwargs)
         self.apply_results(results)
-        pause_for_user()
         self.deduct_mp_from_user(user)
 
     def __repr__(self):
@@ -60,6 +70,17 @@ class Action(ABC):  # Lawsuit
                         f"(Current: {result.combatant.hp})",
                     )
 
+            elif result.type_ == ActionResultType.MP_DELTA:
+                result.combatant.mp.delta(result.value)
+                if result.value <= 0:
+                    print(
+                        result.combatant.name, "takes", abs(result.value), "MP damage!"
+                    )
+                else:
+                    print(result.combatant.name, "restores", result.value, "MP!")
+
+            pause_for_user()
+
     @property
     def display_name(self):
         return self.name.title()
@@ -71,7 +92,7 @@ class Action(ABC):  # Lawsuit
         user.mp.delta(-self.mp_cost)
 
 
-class DamagingAction(Action, ABC):
+class OffensiveAction(Action, ABC):
     @abstractmethod
     def produce_results(
         self,
@@ -79,7 +100,7 @@ class DamagingAction(Action, ABC):
         target: Combatant,
         damage_range: tuple[int, int],
         multipliers: list[Multiplier],
-    ):
+    ) -> list[ActionResult]:
         raise NotImplementedError
 
     def check_affinity(self, target: Combatant) -> tuple[list[Multiplier], bool]:
@@ -95,10 +116,11 @@ class DamagingAction(Action, ABC):
         return multipliers, negate
 
 
-
 class SelfAction(Action, ABC):
     @abstractmethod
-    def produce_results(self, user: Combatant, multipliers: list[Multiplier]):
+    def produce_results(
+        self, user: Combatant, multipliers: list[Multiplier]
+    ) -> list[ActionResult]:
         raise NotImplementedError
 
 

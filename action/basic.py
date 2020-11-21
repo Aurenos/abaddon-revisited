@@ -5,12 +5,12 @@ from combatant import Combatant
 from .db import actions
 from .types import ActionResult
 from .types import ActionResultType as art
-from .types import DamagingAction, EffectType
+from .types import OffensiveAction, EffectType
 from .util import Multiplier, clamp_output
 
 
 @actions.register
-class AttackAction(DamagingAction):
+class AttackAction(OffensiveAction):
     name = "attack"
     effect_type = EffectType.Physical
 

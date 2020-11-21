@@ -6,11 +6,11 @@ from effects import EffectType, Element
 from .db import actions
 from .types import ActionResult
 from .types import ActionResultType as art
-from .types import DamagingAction, Spell
-from .util import Multiplier, clamp_output
+from .types import OffensiveAction, Spell
+from .util import Multiplier, clamp_output, pause_for_user
 
 
-class ElementalSpell(DamagingAction, Spell):
+class ElementalSpell(OffensiveAction, Spell):
     mp_cost = 30
     effect_type = EffectType.Magical
 
@@ -56,3 +56,36 @@ class BoltSpell(ElementalSpell):
 class WaterSpell(ElementalSpell):
     name = "water"
     element = Element.Water
+
+
+@actions.register
+class MPAbsorbSpell(OffensiveAction, Spell):
+    name = "mp_absorb"
+    effect_type = EffectType.Magical
+    
+    @property
+    def display_name(self):
+        return "MP Absorb"
+
+    def produce_results(
+        self,
+        user: Combatant,
+        target: Combatant,
+        damage_range: tuple[int, int],
+        multipliers: list[Multiplier],
+    ):
+        if target.mp <= 0:
+            print(target.name, "has no MP left")
+            pause_for_user()
+            return []
+
+        multipliers.append(1/36)    # hurray for magic numbers :P
+
+        damage = clamp_output(randint(*damage_range), multipliers)
+        if damage > target.mp:  # the original didn't actually have this check
+            damage = target.mp.current
+
+        return [
+            ActionResult(art.MP_DELTA, -damage, target),
+            ActionResult(art.MP_DELTA, damage, user)
+        ]
