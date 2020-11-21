@@ -86,6 +86,19 @@ class DamagingAction(Action, ABC):
     ):
         raise NotImplementedError
 
+    def check_affinity(self, target: Combatant) -> tuple[list[Multiplier], bool]:
+        multipliers = []
+        negate = False
+        if target.is_weak_to(self.element):
+            print(target.name, "is weak to", f"{self.element}!")
+            multipliers.append(1.5)
+        elif target.absorbs(self.element):
+            print(target.name, "absorbs", f"{self.element}!")
+            negate = True
+
+        return multipliers, negate
+
+
 
 class SelfAction(Action, ABC):
     @abstractmethod

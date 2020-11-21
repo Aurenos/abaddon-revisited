@@ -79,7 +79,7 @@ if __name__ == "__main__":
     from effects import Element
     player = Player()
     enemy = Abaddon()
-    enemy.affinity = Element.Ice
+    enemy.affinity = Element.Fire
     battle = Battle(player, enemy)
     try:
         battle.loop()

@@ -7,9 +7,12 @@ pause_for_user = input  # alias input to make purpose clear
 
 
 def clamp_output(
-    value: Union[int, float], multipliers: Optional[list[Multiplier]] = None
+    value: Union[int, float],
+    multipliers: Optional[list[Multiplier]] = None,
+    negate: bool = False,
 ):
     if multipliers is None:
         multipliers = []
     mult_value = math.prod([value, *multipliers])
-    return int(math.floor(max(1, min(mult_value, 9999))))
+    out = int(math.floor(max(1, min(mult_value, 9999))))
+    return -out if negate else out

@@ -71,6 +71,9 @@ class Combatant(ABC):
     def is_weak_to(self, element: Element):
         return self.affinity and ~self.affinity == element
 
+    def absorbs(self, element: Element):
+        return self.affinity and self.affinity == element
+
 
 class Player(Combatant):
     def __init__(self):
