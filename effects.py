@@ -1,3 +1,4 @@
+from action.util import clamp_output
 from enum import Enum
 
 
@@ -31,4 +32,8 @@ class Element(Enum):
         
         if self is Element.Unaspected:
             return
+
+    @classmethod
+    def all(cls) -> list['Element']:
+        return list(cls.__members__.values())
 

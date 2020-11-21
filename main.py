@@ -82,11 +82,12 @@ class Battle:
 
 if __name__ == "__main__":
     from effects import Element
+    from random import choice
 
     player = Player()
     enemy = Abaddon()
-    enemy.affinity = Element.Fire
-    enemy.mp.current = 50
+    f = Element.all()
+    enemy.affinity = choice(Element.all())
     battle = Battle(player, enemy)
     try:
         battle.loop()
