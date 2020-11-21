@@ -42,7 +42,7 @@ class BlizzardSpell(ElementalSpell):
 
 
 @actions.register
-class Bolt(ElementalSpell):
+class BoltSpell(ElementalSpell):
     name = "bolt"
     element = Element.Lightning
 
@@ -53,6 +53,6 @@ class Bolt(ElementalSpell):
 
 
 @actions.register
-class Water(ElementalSpell):
+class WaterSpell(ElementalSpell):
     name = "water"
     element = Element.Water
