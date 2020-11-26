@@ -56,7 +56,7 @@ class Menu:
             print()
 
         for key, opt in self.options.items():
-            if isinstance(opt, self.__class__):
+            if self.is_menu(opt):
                 text = opt.title.title()
             else:
                 text = str(opt)
