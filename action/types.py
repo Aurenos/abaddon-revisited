@@ -30,7 +30,7 @@ class Action(ABC):  # Lawsuit
     name: str
     mp_cost: int = 0
     action_type: EffectType
-    element: Element = Element.Unaspected
+    element: Element = Element.UNASPECTED
 
     def __call__(self, user: Combatant, *args, **kwargs):
         if self.announce:

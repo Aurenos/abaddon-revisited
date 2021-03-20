@@ -14,7 +14,7 @@ from .util import Multiplier, clamp_output
 class CureSpell(SelfAction, Spell):
     name = "cure"
     mp_cost = 25
-    effect_type = EffectType.Magical
+    effect_type = EffectType.MAGICAL
 
     def produce_results(
         self, user: Combatant, multipliers: list[Multiplier]

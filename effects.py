@@ -3,34 +3,34 @@ from typing import Union
 
 
 class EffectType(Enum):
-    Physical = "physical"
-    Magical = "magical"
+    PHYSICAL = "physical"
+    MAGICAL = "magical"
 
 
 class Element(Enum):
-    Unaspected = "unaspected"
-    Fire = "fire"
-    Ice = "ice"
-    Lightning = "lightning"
-    Water = "water"
+    UNASPECTED = "unaspected"
+    FIRE = "fire"
+    ICE = "ice"
+    LIGHTNING = "lightning"
+    WATER = "water"
 
     def __str__(self):
         return self.value
 
     def __invert__(self):
-        if self is Element.Fire:
-            return Element.Ice
+        if self is Element.FIRE:
+            return Element.ICE
 
-        if self is Element.Ice:
-            return Element.Fire
+        if self is Element.ICE:
+            return Element.FIRE
 
-        if self is Element.Lightning:
-            return Element.Water
+        if self is Element.LIGHTNING:
+            return Element.WATER
 
-        if self is Element.Water:
-            return Element.Lightning
+        if self is Element.WATER:
+            return Element.LIGHTNING
 
-        if self is Element.Unaspected:
+        if self is Element.UNASPECTED:
             return
 
     @classmethod
@@ -39,13 +39,13 @@ class Element(Enum):
 
 
 class Ailment(Enum):
-    Poison = "poison"
-    Confusion = "confusion"
-    Berserk = "berserk"
+    POISON = "poison"
+    CONFUSION = "confusion"
+    BERSERK = "berserk"
 
 
 class Buff(Enum):
-    Protect = "protect"
+    PROTECT = "protect"
 
 
 class PersistentEffect:

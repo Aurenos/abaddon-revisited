@@ -12,7 +12,7 @@ from .util import Multiplier, clamp_output, pause_for_user
 
 class ElementalSpell(OffensiveAction, Spell):
     mp_cost = 30
-    effect_type = EffectType.Magical
+    effect_type = EffectType.MAGICAL
 
     def produce_results(
         self,
@@ -34,19 +34,19 @@ class ElementalSpell(OffensiveAction, Spell):
 @actions.register
 class FlareSpell(ElementalSpell):
     name = "flare"
-    element = Element.Fire
+    element = Element.FIRE
 
 
 @actions.register
 class BlizzardSpell(ElementalSpell):
     name = "blizzard"
-    element = Element.Ice
+    element = Element.ICE
 
 
 @actions.register
 class BoltSpell(ElementalSpell):
     name = "bolt"
-    element = Element.Lightning
+    element = Element.LIGHTNING
 
     # Just because "Bolt" is a really short name
     # TODO: Maybe add some way to calculate how many \t's we need in the base __str__
@@ -57,13 +57,13 @@ class BoltSpell(ElementalSpell):
 @actions.register
 class WaterSpell(ElementalSpell):
     name = "water"
-    element = Element.Water
+    element = Element.WATER
 
 
 @actions.register
 class MPAbsorbSpell(OffensiveAction, Spell):
     name = "mp_absorb"
-    effect_type = EffectType.Magical
+    effect_type = EffectType.MAGICAL
 
     @property
     def display_name(self):

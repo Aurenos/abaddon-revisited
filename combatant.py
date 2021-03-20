@@ -99,10 +99,10 @@ class Player(Combatant):
         return f"{self.name}\n\nHP: {self.hp}\nMP: {self.mp}"
 
     def get_stat_by_effect_type(self, effect_type: EffectType):
-        if effect_type == EffectType.Physical:
+        if effect_type == EffectType.PHYSICAL:
             return self.strength
 
-        if effect_type == EffectType.Magical:
+        if effect_type == EffectType.MAGICAL:
             return self.magic
 
 

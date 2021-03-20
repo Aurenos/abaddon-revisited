@@ -12,7 +12,7 @@ from .util import Multiplier, clamp_output
 @actions.register
 class AttackAction(OffensiveAction):
     name = "attack"
-    effect_type = EffectType.Physical
+    effect_type = EffectType.PHYSICAL
 
     def announce(self, user: Combatant, target: Combatant, *_, **__):
         print(user.name, f"attacks {target.name}")
