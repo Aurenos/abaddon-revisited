@@ -1,11 +1,11 @@
 from random import randint
 
 from combatant import Combatant
+from combatant_events import CombatantEvent
+from combatant_events import CombatantEventType as cet
 from effects import EffectType
 
 from .db import actions
-from .types import ActionResult
-from .types import ActionResultType as art
 from .types import SelfAction, Spell
 from .util import Multiplier, clamp_output
 
@@ -18,7 +18,7 @@ class CureSpell(SelfAction, Spell):
 
     def produce_results(
         self, user: Combatant, multipliers: list[Multiplier]
-    ) -> list[ActionResult]:
+    ) -> list[CombatantEvent]:
         hp_restored = clamp_output(randint(20, 25), multipliers)
 
-        return [ActionResult(art.HP_DELTA, hp_restored, user)]
+        return [CombatantEvent(cet.HP_DELTA, hp_restored, user)]

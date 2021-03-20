@@ -1,10 +1,10 @@
 from random import randint
 
 from combatant import Combatant
+from combatant_events import CombatantEvent
+from combatant_events import CombatantEventType as cet
 
 from .db import actions
-from .types import ActionResult
-from .types import ActionResultType as art
 from .types import OffensiveAction, EffectType
 from .util import Multiplier, clamp_output
 
@@ -23,11 +23,10 @@ class AttackAction(OffensiveAction):
         target: Combatant,
         damage_range: tuple[int, int],
         multipliers: list[Multiplier],
-    ) -> list[ActionResult]:
+    ) -> list[CombatantEvent]:
         target_evades = randint(1, 100) < target.evasion
         if target_evades:
-            print(target.name, f"evades {user.name}'s attack!")
-            return []
+            return [CombatantEvent(cet.EVADE, None, target)]
 
         critical_hit = randint(1, 100) <= 10
         if critical_hit:
@@ -35,4 +34,4 @@ class AttackAction(OffensiveAction):
 
         damage = clamp_output(randint(*damage_range), multipliers)
 
-        return [ActionResult(art.HP_DELTA, -damage, target)]
+        return [CombatantEvent(cet.HP_DELTA, -damage, target)]

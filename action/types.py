@@ -4,35 +4,18 @@ from enum import Enum, auto
 from typing import Any, Optional
 
 from combatant import Combatant
+from combatant_events import CombatantEventType, CombatantEvent
 from effects import EffectType, Element
 
 from .util import pause_for_user, Multiplier
 
 
 __all__ = [
-    "ActionResultType",
-    "ActionResult",
     "Action",
     "OffensiveAction",
     "SelfAction",
     "Spell",
 ]
-
-
-class ActionResultType(Enum):
-    """The different types of ActionResults possible"""
-
-    HP_DELTA = auto()
-    MP_DELTA = auto()
-
-
-@dataclass
-class ActionResult:
-    """My substitute for Python's lack of true algebraic data types"""
-
-    type_: ActionResultType
-    value: Any
-    combatant: Combatant
 
 
 class Action(ABC):  # Lawsuit
@@ -56,7 +39,7 @@ class Action(ABC):  # Lawsuit
             self.__announce(user)
         pause_for_user()
         results = self.produce_results(user, *args, **kwargs)
-        self.apply_results(results)
+        self.apply_results(user, results)
         self.deduct_mp_from_user(user)
 
     def __repr__(self):
@@ -67,9 +50,9 @@ class Action(ABC):  # Lawsuit
             f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
         )
 
-    def apply_results(self, results: list[ActionResult]):
+    def apply_results(self, user: Combatant, results: list[CombatantEvent]):
         for result in results:
-            if result.type_ == ActionResultType.HP_DELTA:
+            if result.type_ == CombatantEventType.HP_DELTA:
                 result.combatant.hp.delta(result.value)
                 if result.value <= 0:
                     print(result.combatant.name, "takes", abs(result.value), "damage!")
@@ -82,7 +65,7 @@ class Action(ABC):  # Lawsuit
                         f"(Current: {result.combatant.hp})",
                     )
 
-            elif result.type_ == ActionResultType.MP_DELTA:
+            elif result.type_ == CombatantEventType.MP_DELTA:
                 result.combatant.mp.delta(result.value)
                 if result.value <= 0:
                     print(
@@ -90,6 +73,9 @@ class Action(ABC):  # Lawsuit
                     )
                 else:
                     print(result.combatant.name, "restores", result.value, "MP!")
+
+            elif result.type_ == CombatantEventType.EVADE:
+                print(f"{result.combatant.name} evades {user.name}'s attack!")
 
             pause_for_user()
 
@@ -112,7 +98,7 @@ class OffensiveAction(Action, ABC):
         target: Combatant,
         damage_range: tuple[int, int],
         multipliers: list[Multiplier],
-    ) -> list[ActionResult]:
+    ) -> list[CombatantEvent]:
         raise NotImplementedError
 
     def check_affinity(self, target: Combatant) -> tuple[Multiplier, Multiplier]:
@@ -135,7 +121,7 @@ class SelfAction(Action, ABC):
     @abstractmethod
     def produce_results(
         self, user: Combatant, multipliers: list[Multiplier]
-    ) -> list[ActionResult]:
+    ) -> list[CombatantEvent]:
         raise NotImplementedError
 
 

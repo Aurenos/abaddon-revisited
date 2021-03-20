@@ -46,6 +46,7 @@ class Battle:
             self.print_separator()
 
             if self.player_turn:
+
                 perform_action = self.get_player_action()
 
                 action_params["user"] = self.player
@@ -61,7 +62,8 @@ class Battle:
                 else:
                     raise Exception("wat")
 
-                perform_action(**action_params)
+                if perform_action:
+                    perform_action(**action_params)
                 self.player_turn = False
             else:
                 print(self.enemy.stat_block, "\n")

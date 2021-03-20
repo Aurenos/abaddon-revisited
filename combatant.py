@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from random import randint
 from typing import Optional, Union
 
-from effects import EffectType, Element
+from effects import EffectType, Element, Ailment
 
 
 @functools.total_ordering
@@ -49,6 +49,7 @@ class Combatant(ABC):
         self.mp = ClampedStat(mp)
         self.evasion = evasion
         self.affinity = affinity
+        self.ailments: list[Ailment] = []
 
     @property
     @abstractmethod
@@ -73,6 +74,9 @@ class Combatant(ABC):
 
     def absorbs(self, element: Element):
         return self.affinity and self.affinity == element
+
+    def handle_ailments(self):
+        pass
 
 
 class Player(Combatant):

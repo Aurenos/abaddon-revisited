@@ -1,11 +1,11 @@
 from random import randint
 
 from combatant import Combatant
+from combatant_events import CombatantEvent
+from combatant_events import CombatantEventType as cet
 from effects import EffectType, Element
 
 from .db import actions
-from .types import ActionResult
-from .types import ActionResultType as art
 from .types import OffensiveAction, Spell
 from .util import Multiplier, clamp_output, pause_for_user
 
@@ -20,7 +20,7 @@ class ElementalSpell(OffensiveAction, Spell):
         target: Combatant,
         damage_range: tuple[int, int],
         multipliers: list[Multiplier],
-    ) -> list[ActionResult]:
+    ) -> list[CombatantEvent]:
         weakness_multiplier, absorption_multiplier = self.check_affinity(target)
         multipliers.append(weakness_multiplier)
 
@@ -28,7 +28,7 @@ class ElementalSpell(OffensiveAction, Spell):
             clamp_output(randint(*damage_range), multipliers) * absorption_multiplier
         )
 
-        return [ActionResult(art.HP_DELTA, -damage, target)]
+        return [CombatantEvent(cet.HP_DELTA, -damage, target)]
 
 
 @actions.register
@@ -88,6 +88,6 @@ class MPAbsorbSpell(OffensiveAction, Spell):
             damage = target.mp.current
 
         return [
-            ActionResult(art.MP_DELTA, -damage, target),
-            ActionResult(art.MP_DELTA, damage, user),
+            CombatantEvent(cet.MP_DELTA, -damage, target),
+            CombatantEvent(cet.MP_DELTA, damage, user),
         ]
