@@ -3,8 +3,6 @@ from typing import Optional, Union, TypeVar
 
 Multiplier = TypeVar("Multiplier", int, float)
 
-pause_for_user = input  # alias input to make purpose clear
-
 
 def clamp_output(
     value: Union[int, float],

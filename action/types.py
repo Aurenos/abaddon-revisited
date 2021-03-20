@@ -1,14 +1,11 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from enum import Enum, auto
-from typing import Any, Optional
+from typing import Optional
 
-from combatant import Combatant
-from combatant_events import CombatantEventType, CombatantEvent
+from combatant import Combatant, CombatantEvent
 from effects import EffectType, Element
 
-from .util import pause_for_user, Multiplier
-
+from .util import Multiplier
+from util import pause_for_user
 
 __all__ = [
     "Action",
@@ -32,15 +29,15 @@ class Action(ABC):  # Lawsuit
     action_type: EffectType
     element: Element = Element.UNASPECTED
 
-    def __call__(self, user: Combatant, *args, **kwargs):
+    def __call__(self, user: Combatant, *args, **kwargs) -> list[CombatantEvent]:
         if self.announce:
             self.announce(user, *args, **kwargs)
         else:
             self.__announce(user)
         pause_for_user()
-        results = self.produce_results(user, *args, **kwargs)
-        self.apply_results(user, results)
+        events = self.produce_results(user, *args, **kwargs)
         self.deduct_mp_from_user(user)
+        return events
 
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self.name}>"
@@ -49,35 +46,6 @@ class Action(ABC):  # Lawsuit
         return self.display_name + (
             f"\t({self.mp_cost} MP)" if self.mp_cost > 0 else ""
         )
-
-    def apply_results(self, user: Combatant, results: list[CombatantEvent]):
-        for result in results:
-            if result.type_ == CombatantEventType.HP_DELTA:
-                result.combatant.hp.delta(result.value)
-                if result.value <= 0:
-                    print(result.combatant.name, "takes", abs(result.value), "damage!")
-                else:
-                    print(
-                        result.combatant.name,
-                        "restores",
-                        result.value,
-                        "HP!",
-                        f"(Current: {result.combatant.hp})",
-                    )
-
-            elif result.type_ == CombatantEventType.MP_DELTA:
-                result.combatant.mp.delta(result.value)
-                if result.value <= 0:
-                    print(
-                        result.combatant.name, "takes", abs(result.value), "MP damage!"
-                    )
-                else:
-                    print(result.combatant.name, "restores", result.value, "MP!")
-
-            elif result.type_ == CombatantEventType.EVADE:
-                print(f"{result.combatant.name} evades {user.name}'s attack!")
-
-            pause_for_user()
 
     @property
     def display_name(self) -> str:

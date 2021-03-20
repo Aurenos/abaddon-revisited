@@ -1,13 +1,13 @@
 from random import randint
 
-from combatant import Combatant
-from combatant_events import CombatantEvent
-from combatant_events import CombatantEventType as cet
+from combatant import Combatant, CombatantEvent
+from combatant import CombatantEventType as cet
 from effects import EffectType, Element
 
 from .db import actions
 from .types import OffensiveAction, Spell
-from .util import Multiplier, clamp_output, pause_for_user
+from .util import Multiplier, clamp_output
+from util import pause_for_user
 
 
 class ElementalSpell(OffensiveAction, Spell):

@@ -1,6 +1,8 @@
 from action import actions, OffensiveAction, SelfAction, Action
-from combatant import Player, Abaddon
+from combatant import Player, Abaddon, Combatant, CombatantEvent, CombatantEventType
+from effects import PersistentEffect
 from menu import Menu
+from util import pause_for_user
 
 PLAYER_MENU = (
     Menu()
@@ -39,14 +41,46 @@ class Battle:
         action_name = PLAYER_MENU.get_action()
         return actions[action_name]
 
+    def apply_events(self, user: Combatant, events: list[CombatantEvent]):
+        for event in events:
+            if event.special_text:
+                print(f"\n{event.special_text}")
+                pause_for_user()
+
+            if event.type_ == CombatantEventType.ANNOUNCEMENT:
+                # This is covered by the special_text
+                pass
+            elif event.type_ == CombatantEventType.HP_DELTA:
+                event.combatant.hp.delta(event.value)
+                if event.value <= 0:
+                    print(event.combatant.name, "takes", abs(event.value), "damage!")
+                else:
+                    print(
+                        event.combatant.name,
+                        "restores",
+                        event.value,
+                        "HP!",
+                        f"(Current: {event.combatant.hp})",
+                    )
+
+            elif event.type_ == CombatantEventType.MP_DELTA:
+                event.combatant.mp.delta(event.value)
+                if event.value <= 0:
+                    print(event.combatant.name, "takes", abs(event.value), "MP damage!")
+                else:
+                    print(event.combatant.name, "restores", event.value, "MP!")
+
+            elif event.type_ == CombatantEventType.EVADE:
+                print(f"{event.combatant.name} evades {user.name}'s attack!")
+
     def loop(self):
         while not self.game_over:
             action_params = {}
 
             self.print_separator()
+            events = []
 
             if self.player_turn:
-
                 perform_action = self.get_player_action()
 
                 action_params["user"] = self.player
@@ -63,15 +97,26 @@ class Battle:
                     raise Exception("wat")
 
                 if perform_action:
-                    perform_action(**action_params)
+                    events.extend(perform_action(**action_params))
+
+                events.extend(self.player.handle_persistent_effects())
+
                 self.player_turn = False
             else:
                 print(self.enemy.stat_block, "\n")
                 action_name = self.enemy.take_turn()
                 perform_action = actions[action_name]
-                perform_action(self.enemy, self.player, self.enemy.base_damage, [])
+                events.extend(
+                    perform_action(self.enemy, self.player, self.enemy.base_damage, [])
+                )
 
                 self.player_turn = True
+
+            if events:
+                self.apply_events(
+                    self.player if self.player_turn else self.enemy, events
+                )
+                pause_for_user()
 
         if self.player.hp <= 0:
             print(
@@ -83,10 +128,11 @@ class Battle:
 
 
 if __name__ == "__main__":
-    from effects import Element
+    from effects import Element, Ailment
     from random import choice
 
     player = Player()
+    player.persistent_effects.append(PersistentEffect(Ailment.POISON, 2))
     enemy = Abaddon()
     f = Element.all()
     enemy.affinity = choice(Element.all())

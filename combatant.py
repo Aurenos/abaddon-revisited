@@ -1,10 +1,12 @@
 import functools
 import math
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from enum import Enum, auto
 from random import randint
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
-from effects import EffectType, Element, Ailment
+from effects import Ailment, Buff, EffectType, Element, PersistentEffect
 
 
 @functools.total_ordering
@@ -35,6 +37,26 @@ class ClampedStat:
         return max(self.minimum, min(value, self.maximum))
 
 
+class CombatantEventType(Enum):
+    """The different types of ActionResults possible"""
+
+    HP_DELTA = auto()
+    MP_DELTA = auto()
+    EVADE = auto()
+    FORCE_ACTION = auto()
+    ANNOUNCEMENT = auto()
+
+
+@dataclass
+class CombatantEvent:
+    """My substitute for Python's lack of true algebraic data types"""
+
+    type_: CombatantEventType
+    value: Any
+    combatant: "Combatant"
+    special_text: Optional[str] = None
+
+
 class Combatant(ABC):
     def __init__(
         self,
@@ -49,7 +71,7 @@ class Combatant(ABC):
         self.mp = ClampedStat(mp)
         self.evasion = evasion
         self.affinity = affinity
-        self.ailments: list[Ailment] = []
+        self.persistent_effects: list[PersistentEffect] = []
 
     @property
     @abstractmethod
@@ -75,8 +97,34 @@ class Combatant(ABC):
     def absorbs(self, element: Element):
         return self.affinity and self.affinity == element
 
-    def handle_ailments(self):
-        pass
+    def handle_persistent_effects(self) -> list[CombatantEvent]:
+        events = []
+        for effect in self.persistent_effects:
+            if effect.type_ == Ailment.POISON:
+                poison_dmg = int(self.hp.maximum / randint(15, 25))
+                stxt = f"{self.name} is poisoned!"
+                events.append(
+                    CombatantEvent(CombatantEventType.HP_DELTA, -poison_dmg, self, stxt)
+                )
+
+                effect.duration -= 1
+                if effect.duration <= 0:
+                    events.append(
+                        CombatantEvent(
+                            CombatantEventType.ANNOUNCEMENT,
+                            None,
+                            self,
+                            f"{self.name} is no longer poisoned!",
+                        )
+                    )
+
+        self.clean_persistent_effects()
+        return events
+
+    def clean_persistent_effects(self):
+        self.persistent_effects = [
+            effect for effect in self.persistent_effects if effect.duration > 0
+        ]
 
 
 class Player(Combatant):
@@ -96,7 +144,26 @@ class Player(Combatant):
 
     @property
     def stat_block(self) -> str:
-        return f"{self.name}\n\nHP: {self.hp}\nMP: {self.mp}"
+        base = f"{self.name}\n\nHP: {self.hp}\nMP: {self.mp}"
+        buffs = ", ".join(
+            effect.type_.value
+            for effect in self.persistent_effects
+            if isinstance(effect.type_, Buff)
+        )
+
+        if buffs:
+            base += f"\nBuffs: {buffs}"
+
+        ailments = ", ".join(
+            effect.type_.value
+            for effect in self.persistent_effects
+            if isinstance(effect.type_, Ailment)
+        )
+
+        if ailments:
+            base += f"\nAilments: {ailments}"
+
+        return base
 
     def get_stat_by_effect_type(self, effect_type: EffectType):
         if effect_type == EffectType.PHYSICAL:

@@ -1,8 +1,7 @@
 from random import randint
 
-from combatant import Combatant
-from combatant_events import CombatantEvent
-from combatant_events import CombatantEventType as cet
+from combatant import Combatant, CombatantEvent
+from combatant import CombatantEventType as cet
 
 from .db import actions
 from .types import OffensiveAction, EffectType
